@@ -1,7 +1,5 @@
-def testing():
-    assert 1 < 5
+from main import *
 
 
-def test_cadena():
-    assert 10 == 11
-
+def test_entero_a_romano():
+    assert romanos(399) == ['0000', '300', '90', '9']

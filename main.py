@@ -64,6 +64,19 @@ centenas = {
     'CM': 900
 }
 
-for key, value in diccionario.items():
-    print(key,"-", value)
 
+def romanos(num):
+    num = str(num)
+    lista = []
+    
+    if len(num) < 4:
+        num = '{:0>4s}'.format(num)
+
+    lista = list(num)
+
+    indice = 0
+    for cifra in lista:
+        lista[indice] = cifra + '0' * (len(lista) - 1 - indice)
+        indice += 1
+
+    return lista
