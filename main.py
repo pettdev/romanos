@@ -1,125 +1,106 @@
 '''
-1 - Crea una función que pase de entero > 0 y < 4000 a romano
-
-2 - Cualquier otra entrada debe dar error
-
-Casos
-
-a) 1994 -> MCMXCIV
-b) 4000 -> RomanNumberError("el valor debe ser menor que 4000")
-c) "unacadena" -> RomanNumberError("debe ser un entero")
-d) 0 -> RomanNumberError("el valor debe ser mayor a cero")
-e) -3 -> RomanNumberError("el valor debe ser mayor a cero")
-f) 4.5 -> RomanNumberError("debe ser un entero")
+1-Crear una funcion que pase de entero > 0 y < 4000 a romano
+2-Cualquier otra entrada debe dar error
 '''
-
-
 class RomanNumberError(Exception):
     pass
 
-dict_entero_a_romano = {
-    1: 'I',
-    2: 'II',
-    3: "III",
-    4: 'IV',
-    5: 'V',
-    6: "VI",
-    7: 'VII',
-    8: 'VIII',
-    9: "IX",
-    10: 'X',
-    20: 'XX',
-    30: 'XXX',
-    40: 'XL',
-    50: 'L',
-    60: 'LX',
-    70: 'LXX',
-    80: 'LXXX',
-    90: 'XC',
-    100: 'C',
-    200: 'CC',
-    300: 'CCC',
-    400: 'CD',
-    500: 'D',
-    600: 'DC',
-    700: 'DCC',
-    800: 'DCCC',
-    900: 'CM',
-    1000: 'M',
-    2000: 'MM',
-    3000: 'MMM',
+dic_entero_a_romano={
+    1:'I',2:'II',3:'III',
+    4:'IV',5:'V',6:'VI',
+    7:'VII',8:'VIII',9:'IX',
+    10:'X',20:'XX',30:'XXX',
+    40:'XL',50:'L',60:'LX',
+    70:'LXX',80:'LXXX',90:'XC',
+    100:'C',200:'CC',300:'CCC',
+    400:'CD',500:'D',600:'DC',
+    700:'DCC',800:'DCCC',900:'CM', 
+    1000:'M',2000:'MM',3000:'MMM'
 }
 
-dict_romano_a_entero = {
-    'I': 1,
-    'II': 2,
-    "III": 3,
-    'IV': 4,
-    'V': 5,
-    "VI": 6,
-    'VII': 7,
-    'VIII': 8,
-    "IX": 9,
-    'X': 10,
-    'XX': 20,
-    'XXX': 30,
-    'XL': 40,
-    'L': 50,
-    'LX': 60,
-    'LXX': 70,
-    'LXXX': 80,
-    'XC': 90,
-    'C': 100,
-    'CC': 200,
-    'CCC': 300,
-    'CD': 400,
-    'D': 500,
-    'DC': 600,
-    'DCC': 700,
-    'DCCC': 800,
-    'CM': 900,
-    'M': 1000,
-    'MM': 2000,
-    'MMM': 3000,
+dic_romano_a_entero={
+
+ 'I':1, 'V':5, 'X':10,'L':50, 'C':100, 'D':500, 'M':1000 , '':0
+}
+
+restas = {
+    'I':('V','X'),
+    'X':('L','C'),
+    'C':('D','M')   
 }
 
 
-def entero_a_romanos(num: int) -> str:
-    num = '{:0>4d}'.format(num)
-    lista = list(num)
+'''
+Reglas a cumplir con romano_a_entero
+- Los símbolos se suman y ordenan de mayor a menor
+- Si un símbolo de menor valor antecede a uno de mayor, el de menor valor se resta al de mayor
+- Solo se puede restar un símbolo de valor pequeño de cualquier símbolo de valor grande.
+- Los símbolos "I", "X", "C" y "M" se pueden repetir tres veces seguidas, pero no más. (Pueden aparecer más de tres veces si no aparecen secuencialmente, como en XXXIX.) "D", "L" y "V" no se pueden repetir.
+
+Restas:
+- "I" solo se puede restar de "V" y "X".
+- "X" se puede restar de "L" y "C" solamente. 
+- "C" se puede restar de "D" y "M" solamente. 
+- "V", "L" y "D" nunca se pueden restar.
+
+- Si se ha producido repetición de “I”, “X” o “C” ya no pueden restarse de sus digitos respectivos. Esto IIX es incorrecto, IX es correcto
+Las restas correctas solo pueden realizarse una vez
+'''
+
+
+def romano_a_entero(rom:str) -> int: 
+    print("valor romano: ", rom)
+
+    valor_entero = 0
+    caracter_anterior = ""
+    cont_repes = 0
+
+    for caracter in rom:
+
+        if caracter == caracter_anterior:
+            if caracter_anterior == "L" or caracter_anterior == "D" or caracter_anterior == "V":
+                raise RomanNumberError("No se puede repetir estos valores: L,D,V")
+            cont_repes += 1
+        else:
+            cont_repes = 1
+
+        if cont_repes > 3:
+            raise RomanNumberError("No se puede repetir el valor más de tres veces")
+
+        if dic_romano_a_entero.get(caracter_anterior) < dic_romano_a_entero.get(caracter):
+            if caracter_anterior == "V" or caracter_anterior=="L" or caracter_anterior=="D":
+                raise RomanNumberError(f"El simbolo romano {caracter_anterior} no se puede restar")
+            if caracter_anterior and (caracter not in restas[caracter_anterior]):
+                raise RomanNumberError(f"El simbolo romano {caracter_anterior} solo se puede restar de {restas[caracter_anterior][0]} y {restas[caracter_anterior][1]}")
+         
+            #if caracter_anterior not in restas.keys():
+            #    raise RomanNumberError(f"El simbolo romano {caracter_anterior} no se puede restar")
+            #    print("Ingresa aqui")
+          
+            valor_entero -=  dic_romano_a_entero.get(caracter_anterior) * 2
+            
+        caracter_anterior = caracter
+        valor_entero += dic_romano_a_entero.get(caracter)
+  
+    return valor_entero
+
+
+print("Romano a entero:", romano_a_entero("VX"))
+
+
+def entero_a_romano(num:int) -> str:
+
+    num = "{:0>4d}".format(num)
+    lista = list(num) 
     longitud = len(lista)
-    numeros_romanos = ""
+    numero_romano=""
 
     for i in range(longitud):
+        longitud -=1
+        lista[i] += "0"*longitud
+        numero_romano += dic_entero_a_romano.get( int(lista[i]),'')
 
-        longitud -= 1
-        lista[i] += '0' * longitud
-
-        numeros_romanos += dict_entero_a_romano.get(int(lista[i]), '')
-
-    return numeros_romanos
+    return numero_romano
 
 
-def romano_a_entero(rom:str)->int: #M < D->C->C->X->I->I->I
-    print("valor romano: ",rom)
-    lista = list(rom)  # convertirmos en lista el romano recibido #['M','D','C','C','X','I','I','I']
-    print("lista romano: ",lista)
-    
-    valor_entero=0
-
-    for i in rom:
-  
-        #if i != len(lista)-1:
-            """
-            if dic_romano_a_entero.get(lista[i]) < dic_romano_a_entero.get(lista[i+1]):
-                # si es I and V  or I and X
-                #   restar si
-                #  
-                valor_entero += dic_romano_a_entero.get(lista[i+1]) - dic_romano_a_entero.get(lista[i])
-            else:
-                valor_entero +=dic_romano_a_entero.get(lista[i])    
-            """
-            valor_entero +=dict_romano_a_entero.get(i) 
-    return valor_entero
-    
-print("Romano a entero: ",romano_a_entero("MDCCXIII"))#MMXIX
+#print("funcion en accion",entero_a_romano(336))
